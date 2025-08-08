@@ -1,8 +1,8 @@
 # 🗺️ Fate of Our Rivers
 
-## 🌊 Welcome, Hero of the Waters!
+## 🌊 Welcome, Hero of the Waters! 🔱🧜‍♂
 
-You’ve been entrusted with a critical mission: guide our rivers through the decades to 2060. Every decision you make shapes the future of environmental health, economic development, and community well-being.
+You’ve been entrusted with a critical mission: guide our rivers through the decades. Every decision you make shapes the future of environmental health, economic development, and community well-being.
 
 ---
 
