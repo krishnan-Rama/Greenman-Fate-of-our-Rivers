@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Fate of Our Rivers</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Cinzel', serif;
+      background: url('images/Image_2.jpeg') no-repeat center center fixed;
+      background-size: cover;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      /*background-color: #111;*/
+      /*background-blend-mode: overlay;*/
+      /*color: #eef;*/
+    }
+    .card {
+      background: rgba(0,0,0,0.75);
+      border: 2px solid #4a4a4a;
+      border-radius: 8px;
+      padding: 1.5rem;
+      max-width: 600px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.7);
+      margin-bottom: 1rem;
+      color: #eef;
+    }
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+    h2 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    p {
+      font-size: 1rem;
+      line-height: 1.4;
+      margin-bottom: 1rem;
+    }
+    .choices button, #start-btn {
+      width: 45%;
+      margin: 0.5rem;
+      padding: 0.75rem;
+      font-size: 1rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: transform 0.1s;
+      color: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .choices button img {
+      width: 100px;
+      height: auto;
+      margin-right: 0.75rem;
+    }
+    .choices button:active, #start-btn:active {
+      transform: scale(0.97);
+    }
+    .choice-green, #start-btn {
+      background: #28a745;
+    }
+    .choice-green:hover, #start-btn:hover {
+      background: #218838;
+    }
+    .choice-blue {
+      background: #007bff;
+    }
+    .choice-blue:hover {
+      background: #0069d9;
+    }
+    #trackers {
+      width: 90%;
+      max-width: 600px;
+    }
+    .tracker {
+      margin-bottom: 0.5rem;
+    }
+    .tracker div:first-child {
+      margin-bottom: 0.25rem;
+      font-weight: bold;
+    }
+    .bar-container {
+      background: #333;
+      border-radius: 5px;
+      overflow: hidden;
+      height: 18px;
+    }
+    .bar {
+      height: 100%;
+      transition: width 0.3s ease;
+    }
+    .bar-green {
+      background: #28a745;
+    }
+    .bar-blue {
+      background: #007bff;
+    }
+    .bar-yellow {
+      background: #ffc107;
+    }
+    .ending {
+      padding: 1rem;
+      border-radius: 6px;
+      font-size: 1.1rem;
+      margin-top: 1rem;
+    }
+    .recovery {
+      background: #155724;
+      color: #c3e6cb;
+    }
+    .warning {
+      background: #856404;
+      color: #fff3cd;
+    }
+    .collapse {
+      background: #721c24;
+      color: #f8d7da;
+    }
+    /* add this below your existing styles */
+#trackers {
+  background: rgba(245, 245, 220, 0.7); /* light beige at 70% opacity */
+  border: 2px solid rgba(200, 180, 150, 0.8);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  max-width: 600px;
+  width: 90%;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+  </style>
+</head>
+<body>
+  <!-- START SCREEN -->
+  <div id="start-screen" class="card">
+    <h1>🗺 Fate of Our Rivers</h1>
+    <h2>Welcome, Hero! 🌊🧜‍♂</h2>
+    <p>You have been entrusted with guiding our rivers through time. Each choice shapes environmental health, economic growth, and community well-being.</p>
+    <p>Ready your wisdom—click below to begin.</p>
+    <button id="start-btn">Start Game</button>
+  </div>
+
+  <!-- GAME CONTAINER -->
+  <div id="game-container" style="display:none;">
+    <div id="game" class="card">
+      <h2 id="round-title"></h2>
+      <p id="round-text"></p>
+      <div class="choices" id="choices"></div>
+    </div>
+  </div>
+
+  <!-- TRACKERS -->
+  <div id="trackers">
+    <div class="tracker">
+      <div>🌿 Environmental Health</div>
+      <div class="bar-container">
+        <div id="bar-green" class="bar bar-green"></div>
+      </div>
+    </div>
+    <div class="tracker">
+      <div>💰 Economic Strength</div>
+      <div class="bar-container">
+        <div id="bar-blue" class="bar bar-blue"></div>
+      </div>
+    </div>
+    <div class="tracker">
+      <div>👥 Social Stability</div>
+      <div class="bar-container">
+        <div id="bar-yellow" class="bar bar-yellow"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const rounds = [
+      {
+        year: 2025,
+        title: 'Chemical Pollution Research',
+        text: 'Pollution threat grows. Fund research or cut budgets?',
+        choices: [
+          { txt: 'Fund research', delta:{g:1,b:-1,y:0} },
+          { txt: 'Cut budgets', delta:{g:-1,b:1,y:0} }
+        ]
+      },
+      {
+        year: 2026,
+        title: 'Water-Quality Monitoring',
+        text: 'Water quality monitoring is sparse. Deploy sensors or keep manual checks?',
+        choices: [
+          { txt: 'Deploy sensors', delta:{g:1,b:0,y:-1} },
+          { txt: 'Manual checks', delta:{g:-1,b:0,y:1} }
+        ]
+      },
+      {
+        year: 2027,
+        title: 'Wastewater Infrastructure',
+        text: 'Aging treatment plants fail. Invest in advanced treatment or maintain systems?',
+        choices: [
+          { txt: 'Invest in treatment', delta:{g:1,b:-1,y:1} },
+          { txt: 'Maintain systems', delta:{g:-1,b:1,y:-1} }
+        ]
+      },
+      {
+        year: 2028,
+        title: 'Flood Defences',
+        text: 'Floods intensify. Build defences or nature based soutions?',
+        choices: [
+          { txt: 'Build defences', delta:{g:0,b:-1,y:1} },
+          { txt: 'Nature based', delta:{g:1,b:0,y:-1} }
+        ]
+      },
+      {
+        year: 2029,
+        title: 'Green Urban Development',
+        text: 'Cities expand. Build on green spaces or Repurpose decomissioned industrial sites?',
+        choices: [
+          { txt: 'Build on green spaces', delta:{g:-1,b:1,y:0} },
+          { txt: 'Repurposed', delta:{g:1,b:-1,y:1} }
+        ]
+      },
+      {
+        year: 2030,
+        title: 'Ethical testing',
+        text: 'Manufactured chemicals require assessments. Continue animal testings or Ethical alternatives?',
+        choices: [
+          { txt: 'Animal testings', delta:{g:0,b:-1,y:-1} },
+          { txt: 'Ethical alternatives', delta:{g:1,b:1,y:1} }
+        ]
+      },
+      {
+        year: 2031,
+        title: 'Agricultural Runoff',
+        text: 'Farm pollution rises. Enforce runoff controls or boost output?',
+        choices: [
+          { txt: 'Enforce controls', delta:{g:1,b:-1,y:0} },
+          { txt: 'Boost output', delta:{g:-1,b:1,y:0} }
+        ]
+      },
+      {
+        year: 2032,
+        title: 'Plastic Ban',
+        text: 'Plastic waste clogs rivers. Ban single-use or relax rules?',
+        choices: [
+          { txt: 'Ban single-use', delta:{g:1,b:0,y:-1} },
+          { txt: 'Relax rules', delta:{g:-1,b:1,y:0} }
+        ]
+      },
+      {
+        year: 2033,
+        title: 'Consumption Campaign',
+        text: 'Overconsumption strains resources. Launch reduction campaigns or deregulate?',
+        choices: [
+          { txt: 'Reduce consumption', delta:{g:0,b:-1,y:1} },
+          { txt: 'Deregulate', delta:{g:0,b:1,y:-1} }
+        ]
+      },
+      {
+        year: 2034,
+        title: 'Corporate Accountability',
+        text: 'Industries pollute. Enforce regulation or relax oversight?',
+        choices: [
+          { txt: 'Enforce regulation', delta:{g:1,b:0,y:0} },
+          { txt: 'Relax oversight', delta:{g:-1,b:1,y:0} }
+        ]
+      },
+      {
+        year: 2035,
+        title: 'Water Pricing',
+        text: 'Water crisis increases. Introduce measured bills or flat rates?',
+        choices: [
+          { txt: 'Measured bills', delta:{g:1,b:1,y:-1} },
+          { txt: 'Flat rates', delta:{g:-1,b:0,y:0} }
+        ]
+      },
+      {
+        year: 2036,
+        title: 'Global Cooperation',
+        text: 'Global chemical regulations are set. Join accords or go isolationist?',
+        choices: [
+          { txt: 'Join accords', delta:{g:1,b:0,y:1} },
+          { txt: 'Go isolationist', delta:{g:-1,b:-1,y:-1} }
+        ]
+      }
+    ];
+
+  let current = 0;
+  const score = { g: 0, b: 0, y: 0 };
+  const total = rounds.length;
+
+  function updateTrackers() {
+    const pct = k => ((score[k] + total) / (2 * total)) * 100;
+    document.getElementById('bar-green').style.width  = pct('g') + '%';
+    document.getElementById('bar-blue').style.width   = pct('b') + '%';
+    document.getElementById('bar-yellow').style.width = pct('y') + '%';
+  }
+
+  function showRound(i) {
+    const r = rounds[i];
+    document.getElementById('round-title').textContent = `➤ Round ${i + 1} – ${r.year}: ${r.title}`;
+    document.getElementById('round-text').textContent  = r.text;
+    const choicesDiv = document.getElementById('choices');
+    choicesDiv.innerHTML = '';
+    r.choices.forEach((c, idx) => {
+      const btn = document.createElement('button');
+      const img = document.createElement('img');
+      img.src = idx === 0 ? 'images/greenfish.png' : 'images/bluefish.png';
+      img.alt = 'Fish Banner';
+      btn.appendChild(img);
+      btn.appendChild(document.createTextNode(c.txt));
+      btn.className = idx === 0 ? 'choice-green' : 'choice-blue';
+      btn.onclick = () => selectChoice(idx);
+      choicesDiv.appendChild(btn);
+    });
+  }
+
+  function selectChoice(idx) {
+    const c = rounds[current].choices[idx];
+    score.g += c.delta.g;
+    score.b += c.delta.b;
+    score.y += c.delta.y;
+    updateTrackers();
+    current++;
+    if (current < total) {
+      showRound(current);
+    } else {
+      showEnding();
+    }
+  }
+
+function showEnding() {
+  const gameDiv = document.getElementById('game');
+  gameDiv.innerHTML = '';
+  const env = score.g, eco = score.b, soc = score.y;
+  let cls, head, msg;
+
+  // 1) Economic collapse
+  if (eco > 0 && env < 0 && soc <= 0) {
+    cls  = 'collapse';
+    head = 'Economic Mirage';
+    msg  = `You have decided to sacrifice environmental health for short term economic gain. Though this initially seemed like a sound financial decision, your lack of foresight led to social and economic collapse due to a complete ecological crisis.`;
+  }
+  // 2) Environmental recovery
+  else if (env > 0 && eco < 0) {
+    cls  = 'recovery';
+    head = 'Leafy Legacy';
+    msg  = `You have taken great steps to protect ecosystems and people across the UK enjoy their green and blue spaces with pride. The economy has taken a substantial hit but should recover in time due to the environmental stability you have created.`;
+  }
+  // 3) Uneasy Equilibrium (fallback)
+  else {
+    cls  = 'warning';
+    head = 'Uneasy Equilibrium';
+    msg  = `You maintained the status quo of environmental policy that went some length to protect wildlife but ultimately fell short in the long term. The public are disenfranchised but chemical companies continue to make a steady profit.`;
+  }
+
+  const div = document.createElement('div');
+  div.className = `ending ${cls}`;
+  div.innerHTML = `<h2>${head}</h2><p>${msg}</p>`;
+  gameDiv.appendChild(div);
+}
+
+
+  document.getElementById('start-btn').addEventListener('click', () => {
+    document.getElementById('start-screen').style.display     = 'none';
+    document.getElementById('game-container').style.display   = 'block';
+    updateTrackers();
+    showRound(0);
+  });
+</script>
+
